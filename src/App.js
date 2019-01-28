@@ -111,10 +111,12 @@ class App extends Component {
             })
             .catch(console.log)
         }
-        const boxes = [];
-        response.outputs[0].data.regions.forEach(faceBox => {
-          boxes.push(this.calculateFaceLocation(faceBox));
-        });
+        let boxes = [];
+        if(response.outputs[0].data.regions) {
+          response.outputs[0].data.regions.forEach(faceBox => {
+            boxes.push(this.calculateFaceLocation(faceBox));
+          });
+        }
         this.displayFaceBox(boxes);
       })
       .catch(err => console.log(err));
