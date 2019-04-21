@@ -30,8 +30,20 @@ class Profile extends React.Component {
     }
   }
 
+  onProfileUpdate = (data) => {
+    fetch(`${process.env.REACT_APP_API_URL}/profile/${this.props.user.id}`, {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ formInput: data })
+    }).then(resp => {
+      this.props.toggleModal();
+      this.props.loadUser({ ...this.props.user, ...data});
+    }).catch(console.log)
+  }
+
   render() {
     const { user, toggleModal } = this.props;
+    const { name, age, pet} = this.state;
     return (
       <div className='profile-modal'>
         <article className="br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center bg-white">
@@ -71,7 +83,7 @@ class Profile extends React.Component {
               id="pet"
             />
             <div className='mt4 profile-buttons'>
-              <button className='b pa2 grow pointer hover-white w-40 bg-light-blue b--black-20'>
+              <button onClick={() => this.onProfileUpdate({name, age, pet})} className='b pa2 grow pointer hover-white w-40 bg-light-blue b--black-20'>
                 Save
               </button>
               <button onClick={toggleModal} className='b pa2 grow pointer hover-white w-40 bg-light-red b--black-20'>
