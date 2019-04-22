@@ -32,7 +32,7 @@ class Profile extends React.Component {
 
   onProfileUpdate = (data) => {
     fetch(`${process.env.REACT_APP_API_URL}/profile/${this.props.user.id}`, {
-      method: 'post',
+      method: 'put',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ formInput: data })
     }).then(resp => {
