@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^4.3.1",
     "clarifai": "^2.6.0",
     "cross-env": "^5.2.0",
     "react": "^16.3.0",
@@ -10,13 +11,14 @@
     "react-particles-js": "^2.1.1",
     "react-scripts": "1.1.1",
     "react-tilt": "^0.1.4",
+    "reactstrap": "^7.1.0",
     "tachyons": "^4.9.1"
   },
   "scripts": {
-    "dev": "cross-env REACT_APP_API_URL=http://localhost:8000 react-scripts start",
+    "dev": "cross-env REACT_APP_API_URL=http://192.168.99.100:3000 react-scripts start",
     "start": "cross-env REACT_APP_API_URL=https://dry-mountain-87457.herokuapp.com react-scripts start",
     "build": "cross-env REACT_APP_API_URL=https://dry-mountain-87457.herokuapp.com react-scripts build",
-    "test": "cross-env REACT_APP_API_URL=http://localhost:8000 react-scripts test --env=jsdom",
+    "test": "cross-env REACT_APP_API_URL=http://192.168.99.100:3000 react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
 }
