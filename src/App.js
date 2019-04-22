@@ -35,7 +35,9 @@ const initialState = {
     name: '',
     email: '',
     entries: 0,
-    joined: ''
+    joined: '',
+    age: null,
+    pet: ''
   }
 }
 
@@ -51,7 +53,9 @@ class App extends Component {
       name: data.name,
       email: data.email,
       entries: data.entries,
-      joined: data.joined
+      joined: data.joined,
+      age: data.age,
+      pet: data.pet
     }})
   }
 
