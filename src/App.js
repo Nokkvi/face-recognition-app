@@ -47,6 +47,38 @@ class App extends Component {
     this.state = initialState;
   }
 
+  componentDidMount() {
+    const token = window.sessionStorage.getItem('token');
+    if(token) {
+      fetch(`${process.env.REACT_APP_API_URL}/signin`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        if(data && data.id) {
+          fetch(`${process.env.REACT_APP_API_URL}/profile/${data.id}`, {
+            method: 'get',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token
+            }
+          })
+          .then(resp => resp.json())
+          .then(user => {
+            if(user && user.email) {
+              this.loadUser(user);
+              this.onRouteChange('home');
+            }
+          })
+        }
+      }).catch(console.log)
+    }
+  }
+
   loadUser = (data) => {
     this.setState({user: {
       id: data.id,
