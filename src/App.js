@@ -114,9 +114,12 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({imageUrl: this.state.input})
-    fetch(process.env.REACT_APP_API_URL+'/image', {
+    fetch(`${process.env.REACT_APP_API_URL}/image`, {
         method: 'post',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': window.sessionStorage.getItem('token')
+        },
         body: JSON.stringify({
           input: this.state.input
         })
@@ -124,9 +127,12 @@ class App extends Component {
       .then(response => response.json())
       .then(response => {
         if(response) {
-          fetch(process.env.REACT_APP_API_URL+'/image', {
+          fetch(`${process.env.REACT_APP_API_URL}/image`, {
             method: 'put',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': window.sessionStorage.getItem('token')
+            },
             body: JSON.stringify({
               id: this.state.user.id
             })
