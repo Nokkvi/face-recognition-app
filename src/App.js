@@ -92,20 +92,25 @@ class App extends Component {
   }
 
   calculateFaceLocation = (data) => {
-    const clarifaiFace = data.region_info.bounding_box;
-    const image = document.getElementById('inputimage');
-    const width = Number(image.width);
-    const height = Number(image.height);
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - (clarifaiFace.right_col * width),
-      bottomRow: height - (clarifaiFace.bottom_row * height),
+    if(data && data.region_info.bounding_box) {
+      console.log(data);
+      const clarifaiFace = data.region_info.bounding_box;
+      const image = document.getElementById('inputimage');
+      const width = Number(image.width);
+      const height = Number(image.height);
+      return {
+        leftCol: clarifaiFace.left_col * width,
+        topRow: clarifaiFace.top_row * height,
+        rightCol: width - (clarifaiFace.right_col * width),
+        bottomRow: height - (clarifaiFace.bottom_row * height),
+      }
     }
   }
 
   displayFaceBox = (boxes) => {
-    this.setState({boxes: boxes});
+    if(boxes) {
+      this.setState({boxes: boxes});
+    }
   }
 
   onInputChange = (event) => {
@@ -139,12 +144,14 @@ class App extends Component {
           })
             .then(response => response.json())
             .then(count => {
-              this.setState(Object.assign(this.state.user, {entries: count}))
+              if(!isNaN(count)) {
+                this.setState(Object.assign(this.state.user, {entries: count}))
+              }
             })
             .catch(console.log)
         }
         let boxes = [];
-        if(response.outputs[0].data.regions) {
+        if(response.outputs && response.outputs[0].data.regions) {
           response.outputs[0].data.regions.forEach(faceBox => {
             boxes.push(this.calculateFaceLocation(faceBox));
           });
