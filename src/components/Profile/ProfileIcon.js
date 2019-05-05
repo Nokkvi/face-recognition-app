@@ -21,6 +21,20 @@ class ProfileIcon extends React.Component {
     }));
   }
 
+  onSignout = () => {
+    fetch(`${process.env.REACT_APP_API_URL}/signout`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': window.sessionStorage.getItem('token')
+      }
+    })
+    .then(response => {
+      window.sessionStorage.removeItem('token')
+      this.props.onRouteChange('signout')
+    }).catch(e => console.log(e))
+  }
+
   render() {
     return (
       <div className="pa4 tc">
@@ -39,7 +53,7 @@ class ProfileIcon extends React.Component {
             className="b--transparent shadow-5"
             style={{marginTop: '20px', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
             <DropdownItem onClick={() => this.props.toggleModal()}>View Profile</DropdownItem>
-            <DropdownItem onClick={() => this.props.onRouteChange('signout')}>Sign Out</DropdownItem>
+            <DropdownItem onClick={() => this.onSignout()}>Sign Out</DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </div>
