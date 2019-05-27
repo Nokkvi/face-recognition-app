@@ -47,6 +47,38 @@ class App extends Component {
     this.state = initialState;
   }
 
+  componentDidMount() {
+    const token = window.sessionStorage.getItem('token');
+    if(token) {
+      fetch(`${process.env.REACT_APP_API_URL}/signin`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        if(data && data.id) {
+          fetch(`${process.env.REACT_APP_API_URL}/profile/${data.id}`, {
+            method: 'get',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token
+            }
+          })
+          .then(resp => resp.json())
+          .then(user => {
+            if(user && user.email) {
+              this.loadUser(user);
+              this.onRouteChange('home');
+            }
+          })
+        }
+      }).catch(console.log)
+    }
+  }
+
   loadUser = (data) => {
     this.setState({user: {
       id: data.id,
@@ -60,20 +92,25 @@ class App extends Component {
   }
 
   calculateFaceLocation = (data) => {
-    const clarifaiFace = data.region_info.bounding_box;
-    const image = document.getElementById('inputimage');
-    const width = Number(image.width);
-    const height = Number(image.height);
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - (clarifaiFace.right_col * width),
-      bottomRow: height - (clarifaiFace.bottom_row * height),
+    if(data && data.region_info.bounding_box) {
+      console.log(data);
+      const clarifaiFace = data.region_info.bounding_box;
+      const image = document.getElementById('inputimage');
+      const width = Number(image.width);
+      const height = Number(image.height);
+      return {
+        leftCol: clarifaiFace.left_col * width,
+        topRow: clarifaiFace.top_row * height,
+        rightCol: width - (clarifaiFace.right_col * width),
+        bottomRow: height - (clarifaiFace.bottom_row * height),
+      }
     }
   }
 
   displayFaceBox = (boxes) => {
-    this.setState({boxes: boxes});
+    if(boxes) {
+      this.setState({boxes: boxes});
+    }
   }
 
   onInputChange = (event) => {
@@ -82,9 +119,12 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({imageUrl: this.state.input})
-    fetch(process.env.REACT_APP_API_URL+'/image', {
+    fetch(`${process.env.REACT_APP_API_URL}/image`, {
         method: 'post',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': window.sessionStorage.getItem('token')
+        },
         body: JSON.stringify({
           input: this.state.input
         })
@@ -92,21 +132,26 @@ class App extends Component {
       .then(response => response.json())
       .then(response => {
         if(response) {
-          fetch(process.env.REACT_APP_API_URL+'/image', {
+          fetch(`${process.env.REACT_APP_API_URL}/image`, {
             method: 'put',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': window.sessionStorage.getItem('token')
+            },
             body: JSON.stringify({
               id: this.state.user.id
             })
           })
             .then(response => response.json())
             .then(count => {
-              this.setState(Object.assign(this.state.user, {entries: count}))
+              if(!isNaN(count)) {
+                this.setState(Object.assign(this.state.user, {entries: count}))
+              }
             })
             .catch(console.log)
         }
         let boxes = [];
-        if(response.outputs[0].data.regions) {
+        if(response.outputs && response.outputs[0].data.regions) {
           response.outputs[0].data.regions.forEach(faceBox => {
             boxes.push(this.calculateFaceLocation(faceBox));
           });
